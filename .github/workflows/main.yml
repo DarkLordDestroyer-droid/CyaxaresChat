@@ -16,20 +16,19 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.10'
 
-    - name: Install System Dependencies
+    - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk
+        sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
         pip install --upgrade pip setuptools
         pip install "cython<3.0.0" buildozer
 
     - name: Build APK with Buildozer
+      env:
+        APP_ANDROID_ACCEPT_SDK_LICENSES: "1"
       run: |
-        # SDK lisanslarını boru hattını patlatmadan otomatik kabul et
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
         buildozer -v android debug
 
     - name: Upload APK Artifact
