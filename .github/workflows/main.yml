@@ -23,11 +23,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk
         pip install --upgrade pip
-        pip install buildozer cython
+        pip install "cython<3.0.0" buildozer
 
     - name: Build APK with Buildozer
       run: |
-        buildozer -v android debug
+        # Android SDK lisanslarını otomatik kabul et ve AIDL hatasını önle
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
