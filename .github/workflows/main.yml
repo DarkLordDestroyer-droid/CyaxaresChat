@@ -18,17 +18,19 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Dependencies
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk
-        pip install --upgrade pip
+        pip install --upgrade pip setuptools
         pip install "cython<3.0.0" buildozer
 
     - name: Build APK with Buildozer
       run: |
-        # Android SDK lisanslarını otomatik kabul et ve AIDL hatasını önle
-        yes | buildozer -v android debug
+        # SDK lisanslarını boru hattını patlatmadan otomatik kabul et
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
