@@ -13,12 +13,17 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Free Disk Space
+    - name: Free Disk Space & Add Swap Space
       run: |
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /usr/local/lib/android
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
+        # 10 GB Sanal Bellek (Swap) Oluştur (RAM taşmasını önler)
+        sudo fallocate -l 10G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -34,7 +39,8 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
-        export MAKEFLAGS="-j2"
+        # Derleme yükünü tek çekirdeğe sabitleyerek kararlı tamamlanmasını sağla
+        export MAKEFLAGS="-j1"
         buildozer -v android debug
 
     - name: Upload APK Artifact
