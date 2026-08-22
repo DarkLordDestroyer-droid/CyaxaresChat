@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Free Disk Space & Add Swap Space
+    - name: Free Disk Space & Add Swap
       run: |
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /usr/local/lib/android
@@ -34,17 +34,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev autoconf automake libtool pkg-config
         pip install --upgrade pip setuptools
-        pip install "cython<3.0.0" buildozer
+        pip install "cython==0.29.33" buildozer
 
     - name: Build APK with Buildozer
+      env:
+        ACCEPT_BUILD_TOOLS_CHECKSUM_MUTABILITY: "1"
       run: |
         export MAKEFLAGS="-j1"
-        buildozer -v android debug || true
-
-    - name: Print Build Logs
-      run: |
-        cat .buildozer/android/platform/build-*/dists/*/__build.log || true
-        cat .buildozer/android/platform/build-*/build/other_builds/*/*/puppet/build.log || true
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
