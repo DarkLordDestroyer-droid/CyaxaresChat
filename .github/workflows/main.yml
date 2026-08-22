@@ -13,13 +13,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Free Disk Space & Add Swap
+    - name: Free Disk Space & Setup Swap
       run: |
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /usr/local/lib/android
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
-        sudo fallocate -l 10G /swapfile
+        
+        # Çakışan eski swap dosyasını güvenle kapatıp kaldır
+        sudo swapoff -a || true
+        sudo rm -f /swapfile
+        
+        # Clean 10 GB Swap alanı oluştur
+        sudo fallocate -l 10G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=10240
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
@@ -44,10 +50,8 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
-        # Sistemdeki çakışan SDK değişkenlerini temizle
         unset ANDROID_HOME
         unset ANDROID_SDK_ROOT
-        
         export MAKEFLAGS="-j1"
         yes | buildozer -v android debug
 
