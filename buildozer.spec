@@ -7,8 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
-# Python sürümü 3.10.12 olarak kilitlendi (Python C-API hatasını çözer)
-requirements = hostpython3==3.10.12,python3==3.10.12,kivy==2.3.0
+requirements = python3,kivy==2.3.0
 
 orientation = portrait
 fullscreen = 0
