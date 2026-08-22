@@ -20,7 +20,6 @@ jobs:
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
         
-        # Sistem swap'ını çakışmayacak yeni dizinde oluştur
         sudo fallocate -l 10G /mnt/swapfile || sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=10240
         sudo chmod 600 /mnt/swapfile
         sudo mkswap /mnt/swapfile
@@ -42,13 +41,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev autoconf automake libtool pkg-config
         pip install --upgrade pip setuptools
-        pip install "cython<3.0.0" buildozer==1.5.0
+        pip install "cython==0.29.33" "buildozer==1.5.0"
 
     - name: Build APK with Buildozer
       run: |
         unset ANDROID_HOME
         unset ANDROID_SDK_ROOT
-        export MAKEFLAGS="-j1"
+        export MAKEFLAGS="-j2"
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
