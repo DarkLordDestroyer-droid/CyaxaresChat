@@ -13,30 +13,30 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Free Disk Space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
-    - name: Clear Pre-installed Android NDK/SDK Envs
-      run: |
-        # Sistemdeki çakışan NDK değişkenlerini temizle
-        unset ANDROID_NDK_HOME
-        unset ANDROID_NDK_LATEST_HOME
-        unset ANDROID_NDK_ROOT
-
     - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev autoconf automake libtool pkg-config
+
         pip install --upgrade pip setuptools
         pip install "cython<3.0.0" buildozer
 
     - name: Build APK with Buildozer
       run: |
-        # Çakışan NDK yollarını ezip Buildozer'ın kendi ortamını kurmasını sağla
-        export ANDROID_NDK_HOME=""
-        export ANDROID_NDK_ROOT=""
+        # NDK RAM kullanımını tek çekirdeğe sınırlayarak çökmesini engelle
+        export MAKEFLAGS="-j2"
         buildozer -v android debug
 
     - name: Upload APK Artifact
