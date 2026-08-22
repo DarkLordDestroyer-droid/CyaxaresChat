@@ -20,15 +20,11 @@ jobs:
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
         
-        # Çakışan eski swap dosyasını güvenle kapatıp kaldır
-        sudo swapoff -a || true
-        sudo rm -f /swapfile
-        
-        # Clean 10 GB Swap alanı oluştur
-        sudo fallocate -l 10G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=10240
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
+        # Sistem swap'ını çakışmayacak yeni dizinde oluştur
+        sudo fallocate -l 10G /mnt/swapfile || sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=10240
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
 
     - name: Set up JDK 11
       uses: actions/setup-java@v4
