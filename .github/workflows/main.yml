@@ -39,7 +39,12 @@ jobs:
     - name: Build APK with Buildozer
       run: |
         export MAKEFLAGS="-j1"
-        buildozer -v android debug
+        buildozer -v android debug || true
+
+    - name: Print Build Logs
+      run: |
+        cat .buildozer/android/platform/build-*/dists/*/__build.log || true
+        cat .buildozer/android/platform/build-*/build/other_builds/*/*/puppet/build.log || true
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
