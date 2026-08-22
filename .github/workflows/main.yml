@@ -31,7 +31,7 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Set up Python 3.10
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
@@ -47,7 +47,9 @@ jobs:
       run: |
         unset ANDROID_HOME
         unset ANDROID_SDK_ROOT
-        export MAKEFLAGS="-j2"
+        export CCACHE_DIR=$HOME/.ccache
+        export PATH="/usr/lib/ccache:$PATH"
+        export MAKEFLAGS="-j4"
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
