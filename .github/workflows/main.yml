@@ -1,6 +1,48 @@
-- name: Build APK with Buildozer
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Free Disk Space & Add Swap Space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo fallocate -l 10G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev autoconf automake libtool pkg-config
+        pip install --upgrade pip setuptools
+        pip install "cython<3.0.0" buildozer
+
+    - name: Build APK with Buildozer
       run: |
         export MAKEFLAGS="-j1"
-        buildozer -v android debug || true
-        cat .buildozer/android/platform/build-*/build/other_builds/*/*/puppet/build.log || true
-        cat .buildozer/android/platform/build-*/dists/*/__build.log || true
+        buildozer -v android debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CyaxaresChat-APK
+        path: bin/*.apk
